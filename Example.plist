@@ -6,7 +6,7 @@
 	<dict>
 		<key>Bundles</key>
 		<array>
-			<string>com.imgui.example</string>
+			<string>com.miniclip.8ballpool</string>
 		</array>
 	</dict>
 </dict>
