@@ -146,7 +146,7 @@ static bool MenDeal = true;
 }
 
 - (void)viewDidLoad {
-    [super __viewDidLoad];
+    [super viewDidLoad];
     
     self.mtkView.device = self.device;
     self.mtkView.delegate = self;
@@ -242,32 +242,27 @@ static bool MenDeal = true;
             
                 if (ImGui::BeginTabItem("Main")) {
                     
-                    // Toggle for Guideline Patches
                     static bool line_hack_toggle = false;
                     if (ImGui::Checkbox("Long Guideline", &line_hack_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            // Target hex modifications from edited file
-                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; [span_0](start_span)// mov x0, #1; ret[span_0](end_span)
-                            uint8_t patch_nop[]  = {0x1F, 0x20, 0x03, 0xD5};                         [span_1](start_span)// nop[span_1](end_span)
+                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6};
+                            uint8_t patch_nop[]  = {0x1F, 0x20, 0x03, 0xD5};
                             
-                            // Original memory bytes for restore functionality
-                            [span_2](start_span)uint8_t orig_11b488[]  = {0x06, 0xFB, 0xBC, 0x94};[span_2](end_span)
-                            [span_3](start_span)uint8_t orig_11b480[]  = {0x60, 0x6A, 0x28, 0x38};[span_3](end_span)
-                            [span_4](start_span)uint8_t orig_30c2fc0[] = {0x01, 0x9B, 0x00, 0xF0};[span_4](end_span)
+                            uint8_t orig_11b488[]  = {0x06, 0xFB, 0xBC, 0x94};
+                            uint8_t orig_11b480[]  = {0x60, 0x6A, 0x28, 0x38};
+                            uint8_t orig_30c2fc0[] = {0x01, 0x9B, 0x00, 0xF0};
 
                             if (line_hack_toggle) {
-                                // Apply guideline patches using relative offsets
-                                [span_5](start_span)DobbyCodePatch((void*)(base + 0x2A3DA8), patch_true, 8);[span_5](end_span)
-                                [span_6](start_span)DobbyCodePatch((void*)(base + 0x2A3EE4), patch_true, 8);[span_6](end_span)
-                                [span_7](start_span)[span_8](start_span)DobbyCodePatch((void*)(base + 0x11B488), patch_true, 8);[span_7](end_span)[span_8](end_span)
-                                [span_9](start_span)DobbyCodePatch((void*)(base + 0x11B480), patch_nop, 4);[span_9](end_span)
-                                [span_10](start_span)[span_11](start_span)DobbyCodePatch((void*)(base + 0x30C2FC0), patch_true, 8);[span_10](end_span)[span_11](end_span)
+                                DobbyCodePatch((void*)(base + 0x2A3DA8), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x2A3EE4), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x11B488), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x11B480), patch_nop, 4);
+                                DobbyCodePatch((void*)(base + 0x30C2FC0), patch_true, 8);
                             } else {
-                                // Restore original game function behavior
-                                [span_12](start_span)DobbyCodePatch((void*)(base + 0x11B488), orig_11b488, 4);[span_12](end_span)
-                                [span_13](start_span)DobbyCodePatch((void*)(base + 0x11B480), orig_11b480, 4);[span_13](end_span)
-                                [span_14](start_span)DobbyCodePatch((void*)(base + 0x30C2FC0), orig_30c2fc0, 4);[span_14](end_span)
+                                DobbyCodePatch((void*)(base + 0x11B488), orig_11b488, 4);
+                                DobbyCodePatch((void*)(base + 0x11B480), orig_11b480, 4);
+                                DobbyCodePatch((void*)(base + 0x30C2FC0), orig_30c2fc0, 4);
                             }
                         }
                     }
@@ -282,18 +277,17 @@ static bool MenDeal = true;
                 
                 if (ImGui::BeginTabItem("Misc")) {
                     
-                    // Toggle for Anti-Ban Patch
                     static bool antiban_toggle = false;
                     if (ImGui::Checkbox("Anti-Ban", &antiban_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; [span_15](start_span)// mov x0, #1; ret[span_15](end_span)
-                            uint8_t orig_2fdcaa0[] = {0x61, 0xA0, 0x00, 0xF0};                         [span_16](start_span)// original instruction[span_16](end_span)
+                            uint8_t patch_true[]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6};
+                            uint8_t orig_2fdcaa0[] = {0x61, 0xA0, 0x00, 0xF0};
                             
                             if (antiban_toggle) {
-                                [span_17](start_span)[span_18](start_span)DobbyCodePatch((void*)(base + 0x2FDCAA0), patch_true, 8);[span_17](end_span)[span_18](end_span)
+                                DobbyCodePatch((void*)(base + 0x2FDCAA0), patch_true, 8);
                             } else {
-                                [span_19](start_span)DobbyCodePatch((void*)(base + 0x2FDCAA0), orig_2fdcaa0, 4);[span_19](end_span)
+                                DobbyCodePatch((void*)(base + 0x2FDCAA0), orig_2fdcaa0, 4);
                             }
                         }
                     }
