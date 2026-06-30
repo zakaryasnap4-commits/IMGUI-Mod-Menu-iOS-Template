@@ -9,9 +9,9 @@ LIBRARY_NAME = pool
 
 $(LIBRARY_NAME)_FRAMEWORKS = UIKit Foundation Security QuartzCore CoreGraphics CoreText AVFoundation Accelerate GLKit SystemConfiguration GameController Metal MetalKit
 
-# Added -Wno-module-import-in-extern-c to ignore the clang module error
-$(LIBRARY_NAME)_CCFLAGS = -std=c++11 -fno-rtti -fno-exceptions -DNDEBUG -Wno-module-import-in-extern-c
-$(LIBRARY_NAME)_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-value -Wno-module-import-in-extern-c
+# Added -Wno-nontrivial-memcall to bypass ImGui outdated memset warning on newer Clang compilers
+$(LIBRARY_NAME)_CCFLAGS = -std=c++11 -fno-rtti -fno-exceptions -DNDEBUG -Wno-module-import-in-extern-c -Wno-nontrivial-memcall
+$(LIBRARY_NAME)_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -Wno-unused-variable -Wno-unused-value -Wno-module-import-in-extern-c -Wno-nontrivial-memcall
 
 $(LIBRARY_NAME)_OBJ_FILES = 5Toubun/libdobby.a
 
