@@ -21,6 +21,7 @@ jobs:
         run: |
           brew install dpkg xz
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          rm -rf $HOME/theos/sdks
           git clone --depth=1 https://github.com/theos/sdks.git $HOME/theos/sdks
 
       - name: Compile Dylib
