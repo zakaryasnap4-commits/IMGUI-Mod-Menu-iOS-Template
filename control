@@ -1,9 +1,9 @@
-Package: com.imgui.example
-Name: IMGUI Mod Menu iOS Example
+Package: com.matin.pool
+Name: 8 Ball Pool ImGui Mod Menu
 Depends: mobilesubstrate
 Version: 1.0
 Architecture: iphoneos-arm64
 Section: Tweaks
-Description: hello!
-Maintainer: NAME
-Author: NAME
+Description: Long Guideline & Anti-Ban Mod Menu for 8 Ball Pool.
+Maintainer: MaTiN
+Author: MaTiN
