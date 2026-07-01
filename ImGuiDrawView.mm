@@ -50,6 +50,20 @@ void setup(){
     Il2CppAttach();
     IL2CPP::il2cpp_thread_attach(IL2CPP::il2cpp_domain_get());
     
+    // -------------------------------------------------------------------------
+    // ANTI-SIDELOAD & INTEGRITY BYPASS (Executes automatically on launch)
+    // -------------------------------------------------------------------------
+    uintptr_t base = get_binary_base();
+    if (base > 0) {
+        uint8_t bypass_ret[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+        
+        // Patching reportIssuesInternal to stop the app from reporting modification and closing
+        DobbyCodePatch((void*)(base + 0x12CECDC), bypass_ret, 8);
+        
+        // Patching crash/integrity reporter framework initialization
+        DobbyCodePatch((void*)(base + 0x12CDA08), bypass_ret, 8);
+    }
+    
     loadHooks();
 }
 
@@ -288,6 +302,22 @@ static bool MenDeal = true;
                                 DobbyCodePatch((void*)(base + 0x2FDCAA0), patch_true, 8);
                             } else {
                                 DobbyCodePatch((void*)(base + 0x2FDCAA0), orig_2fdcaa0, 4);
+                            }
+                        }
+                    }
+                    
+                    // Added Creator Mode from 'mode edit.txt'
+                    static bool creator_mode_toggle = false;
+                    if (ImGui::Checkbox("Creator Mode", &creator_mode_toggle)) {
+                        uintptr_t base = get_binary_base();
+                        if (base > 0) {
+                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+                            uint8_t orig_creator[] = {0xff, 0x43, 0x00, 0xd1}; // sub sp, sp, #0x10
+                            
+                            if (creator_mode_toggle) {
+                                DobbyCodePatch((void*)(base + 0x11BC4C), patch_true, 8);
+                            } else {
+                                DobbyCodePatch((void*)(base + 0x11BC4C), orig_creator, 4);
                             }
                         }
                     }
