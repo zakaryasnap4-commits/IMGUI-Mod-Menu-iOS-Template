@@ -56,21 +56,21 @@ void setup(){
     uintptr_t base = get_binary_base();
     if (base > 0) {
         // Hex for: mov x0, #0; ret (Returns False/Nil to disable checks)
-        uint8_t patch_false[] = {0x00, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; 
+        uint8_t patch_false[8] = {0x00, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; 
         
         // 1. Disable storing environment info (dev-build detection)
-        DobbyCodePatch((void*)(base + 0x12CE124), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CE124), (uint8_t*)patch_false, 8);
         
         // 2. Disable symbol table file URL detection
-        DobbyCodePatch((void*)(base + 0x12CE4B8), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CE4B8), (uint8_t*)patch_false, 8);
         
         // 3. Disable internal issue reporting (exclc / excst / symbolTable)
-        DobbyCodePatch((void*)(base + 0x12CECDC), patch_false, 8);
-        DobbyCodePatch((void*)(base + 0x12CEF74), patch_false, 8);
-        DobbyCodePatch((void*)(base + 0x12CE808), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CECDC), (uint8_t*)patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CEF74), (uint8_t*)patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CE808), (uint8_t*)patch_false, 8);
         
         // 4. Disable crash reporting framework initialization completely
-        DobbyCodePatch((void*)(base + 0x12CDA08), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CDA08), (uint8_t*)patch_false, 8);
     }
     
     loadHooks();
@@ -269,23 +269,23 @@ static bool MenDeal = true;
                     if (ImGui::Checkbox("Long Guideline", &line_hack_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
-                            uint8_t patch_nop[]  = {0x1F, 0x20, 0x03, 0xD5};                         // nop
+                            uint8_t patch_true[8] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+                            uint8_t patch_nop[4]  = {0x1F, 0x20, 0x03, 0xD5};                         // nop
                             
-                            uint8_t orig_11b488[]  = {0x06, 0xFB, 0xBC, 0x94};
-                            uint8_t orig_11b480[]  = {0x60, 0x6A, 0x28, 0x38};
-                            uint8_t orig_30c2fc0[] = {0x01, 0x9B, 0x00, 0xF0};
+                            uint8_t orig_11b488[8]  = {0xFF, 0x43, 0x00, 0xD1, 0xFD, 0x7B, 0x01, 0xA9};
+                            uint8_t orig_11b480[4]  = {0x60, 0x6A, 0x28, 0x38};
+                            uint8_t orig_30c2fc0[8] = {0x01, 0x9B, 0x00, 0xF0, 0x21, 0x0C, 0x43, 0xF9};
 
                             if (line_hack_toggle) {
-                                DobbyCodePatch((void*)(base + 0x2A3DA8), patch_true, 8);
-                                DobbyCodePatch((void*)(base + 0x2A3EE4), patch_true, 8);
-                                DobbyCodePatch((void*)(base + 0x11B488), patch_true, 8);
-                                DobbyCodePatch((void*)(base + 0x11B480), patch_nop, 4);
-                                DobbyCodePatch((void*)(base + 0x30C2FC0), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x2A3DA8), (uint8_t*)patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x2A3EE4), (uint8_t*)patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x11B488), (uint8_t*)patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x11B480), (uint8_t*)patch_nop, 4);
+                                DobbyCodePatch((void*)(base + 0x30C2FC0), (uint8_t*)patch_true, 8);
                             } else {
-                                DobbyCodePatch((void*)(base + 0x11B488), orig_11b488, 4);
-                                DobbyCodePatch((void*)(base + 0x11B480), orig_11b480, 4);
-                                DobbyCodePatch((void*)(base + 0x30C2FC0), orig_30c2fc0, 4);
+                                DobbyCodePatch((void*)(base + 0x11B488), (uint8_t*)orig_11b488, 8);
+                                DobbyCodePatch((void*)(base + 0x11B480), (uint8_t*)orig_11b480, 4);
+                                DobbyCodePatch((void*)(base + 0x30C2FC0), (uint8_t*)orig_30c2fc0, 8);
                             }
                         }
                     }
@@ -304,13 +304,13 @@ static bool MenDeal = true;
                     if (ImGui::Checkbox("Anti-Ban", &antiban_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
-                            uint8_t orig_2fdcaa0[] = {0x61, 0xA0, 0x00, 0xF0};
+                            uint8_t patch_true[8]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+                            uint8_t orig_2fdcaa0[8] = {0x61, 0xA0, 0x00, 0xF0, 0x21, 0x50, 0x46, 0xF9};
                             
                             if (antiban_toggle) {
-                                DobbyCodePatch((void*)(base + 0x2FDCAA0), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x2FDCAA0), (uint8_t*)patch_true, 8);
                             } else {
-                                DobbyCodePatch((void*)(base + 0x2FDCAA0), orig_2fdcaa0, 4);
+                                DobbyCodePatch((void*)(base + 0x2FDCAA0), (uint8_t*)orig_2fdcaa0, 8);
                             }
                         }
                     }
@@ -319,13 +319,13 @@ static bool MenDeal = true;
                     if (ImGui::Checkbox("Creator Mode", &creator_mode_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
-                            uint8_t orig_creator[] = {0xff, 0x43, 0x00, 0xd1}; // sub sp, sp, #0x10
+                            uint8_t patch_true[8]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+                            uint8_t orig_creator[8] = {0xFF, 0x43, 0x00, 0xD1, 0xFD, 0x7B, 0x01, 0xA9};
                             
                             if (creator_mode_toggle) {
-                                DobbyCodePatch((void*)(base + 0x11BC4C), patch_true, 8);
+                                DobbyCodePatch((void*)(base + 0x11BC4C), (uint8_t*)patch_true, 8);
                             } else {
-                                DobbyCodePatch((void*)(base + 0x11BC4C), orig_creator, 4);
+                                DobbyCodePatch((void*)(base + 0x11BC4C), (uint8_t*)orig_creator, 8);
                             }
                         }
                     }
