@@ -55,13 +55,22 @@ void setup(){
     // -------------------------------------------------------------------------
     uintptr_t base = get_binary_base();
     if (base > 0) {
-        uint8_t bypass_ret[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+        // Hex for: mov x0, #0; ret (Returns False/Nil to disable checks)
+        uint8_t patch_false[] = {0x00, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; 
         
-        // Patching reportIssuesInternal to stop the app from reporting modification and closing
-        DobbyCodePatch((void*)(base + 0x12CECDC), bypass_ret, 8);
+        // 1. Disable storing environment info (dev-build detection)
+        DobbyCodePatch((void*)(base + 0x12CE124), patch_false, 8);
         
-        // Patching crash/integrity reporter framework initialization
-        DobbyCodePatch((void*)(base + 0x12CDA08), bypass_ret, 8);
+        // 2. Disable symbol table file URL detection
+        DobbyCodePatch((void*)(base + 0x12CE4B8), patch_false, 8);
+        
+        // 3. Disable internal issue reporting (exclc / excst / symbolTable)
+        DobbyCodePatch((void*)(base + 0x12CECDC), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CEF74), patch_false, 8);
+        DobbyCodePatch((void*)(base + 0x12CE808), patch_false, 8);
+        
+        // 4. Disable crash reporting framework initialization completely
+        DobbyCodePatch((void*)(base + 0x12CDA08), patch_false, 8);
     }
     
     loadHooks();
@@ -260,8 +269,8 @@ static bool MenDeal = true;
                     if (ImGui::Checkbox("Long Guideline", &line_hack_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6};
-                            uint8_t patch_nop[]  = {0x1F, 0x20, 0x03, 0xD5};
+                            uint8_t patch_true[] = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
+                            uint8_t patch_nop[]  = {0x1F, 0x20, 0x03, 0xD5};                         // nop
                             
                             uint8_t orig_11b488[]  = {0x06, 0xFB, 0xBC, 0x94};
                             uint8_t orig_11b480[]  = {0x60, 0x6A, 0x28, 0x38};
@@ -295,7 +304,7 @@ static bool MenDeal = true;
                     if (ImGui::Checkbox("Anti-Ban", &antiban_toggle)) {
                         uintptr_t base = get_binary_base();
                         if (base > 0) {
-                            uint8_t patch_true[]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6};
+                            uint8_t patch_true[]   = {0x01, 0x00, 0x80, 0xD2, 0xC0, 0x03, 0x5F, 0xD6}; // mov x0, #1; ret
                             uint8_t orig_2fdcaa0[] = {0x61, 0xA0, 0x00, 0xF0};
                             
                             if (antiban_toggle) {
@@ -306,7 +315,6 @@ static bool MenDeal = true;
                         }
                     }
                     
-                    // Added Creator Mode from 'mode edit.txt'
                     static bool creator_mode_toggle = false;
                     if (ImGui::Checkbox("Creator Mode", &creator_mode_toggle)) {
                         uintptr_t base = get_binary_base();
